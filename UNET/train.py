@@ -13,9 +13,13 @@ from datetime import datetime
 
 import argparse
 
+BATCH_SIZE=16
+EPOCHS=100
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
+    parser.add_argument("--epochs", type=int, default=EPOCHS)
     parser.add_argument(
         "--data-dir",
         type=Path,
@@ -24,8 +28,6 @@ def parse_args():
     )
     return parser.parse_args()
 
-BATCH_SIZE = 32
-EPOCHS = 100
 LR = 1e-3
 IMAGE_SIZE = 64
 INPUT_DIM = IMAGE_SIZE * IMAGE_SIZE  # single-channel, flattened — see note above
@@ -102,7 +104,7 @@ if __name__ == "__main__":
     val_losses = []
     checkpoint_every = 3  # epochs
 
-    for epoch in tqdm(range(1, EPOCHS + 1), desc="EPOCH"):
+    for epoch in tqdm(range(1, args.epochs + 1), desc="EPOCH"):
         model.train()
         epoch_loss = 0.0
         for data, label in tqdm(train_dataloader, desc="BATCH", leave=False):
