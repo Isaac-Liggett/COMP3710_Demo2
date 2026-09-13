@@ -11,7 +11,20 @@ from tqdm import tqdm
 
 from datetime import datetime
 
-BATCH_SIZE = 128
+import argparse
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
+    parser.add_argument(
+        "--data-dir",
+        type=Path,
+        default=Path("./keras_png_slices_data"),
+        help="Path to the keras_png_slices_data folder",
+    )
+    return parser.parse_args()
+
+BATCH_SIZE = 32
 EPOCHS = 100
 LR = 1e-3
 IMAGE_SIZE = 64
@@ -63,22 +76,23 @@ def validate(model, dataloader, loss_fn, device):
 
 # Training Loop
 if __name__ == "__main__":
+    args = parse_args()
     print(f"Pytorch running on {device}")
     
     train_dataloader = get_dataloader(
-        "./keras_png_slices_data/keras_png_slices_train",
-        "./keras_png_slices_data/keras_png_slices_seg_train",
+        args.data_dir / "keras_png_slices_train",
+        args.data_dir / "keras_png_slices_seg_train",
         image_size=256,
         num_workers=0,
-        batch_size=16
+        batch_size=args.batch_size,
     )
 
     validate_dataloader = get_dataloader(
-        "./keras_png_slices_data/keras_png_slices_validate",
-        "./keras_png_slices_data/keras_png_slices_seg_validate",
+        args.data_dir / "keras_png_slices_validate",
+        args.data_dir / "keras_png_slices_seg_validate",
         image_size=256,
         num_workers=0,
-        batch_size=16
+        batch_size=args.batch_size,
     )
 
     model = UNet(n_classes=4).to(device)
