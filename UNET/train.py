@@ -26,13 +26,17 @@ def parse_args():
         default=Path("./keras_png_slices_data"),
         help="Path to the keras_png_slices_data folder",
     )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("./data"),
+        help="Path to the checkpoints and graphs parent folder",
+    )
     return parser.parse_args()
 
 LR = 1e-3
 IMAGE_SIZE = 64
 INPUT_DIM = IMAGE_SIZE * IMAGE_SIZE  # single-channel, flattened — see note above
-CHECKPOINT_DIR = Path("checkpoints")
-CHECKPOINT_DIR.mkdir(exist_ok=True)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -79,6 +83,13 @@ def validate(model, dataloader, loss_fn, device):
 # Training Loop
 if __name__ == "__main__":
     args = parse_args()
+
+    OUT_DIR = args.output_dir
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    CHECKPOINT_DIR = Path(args.output_dir / "checkpoints")
+    CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+
     print(f"Pytorch running on {device}")
     
     train_dataloader = get_dataloader(
@@ -124,7 +135,7 @@ if __name__ == "__main__":
         val_losses.append(val_loss)
 
         losses.append(avg_loss)
-        print(f"Epoch {epoch}/{EPOCHS} | avg loss: {avg_loss:.4f}, val loss: {val_loss:.4f}")
+        print(f"Epoch {epoch}/{args.epochs} | avg loss: {avg_loss:.4f}, val loss: {val_loss:.4f}")
 
         if epoch % checkpoint_every == 0 or epoch == EPOCHS:
             save_checkpoint(
@@ -132,4 +143,7 @@ if __name__ == "__main__":
                 CHECKPOINT_DIR / f"unet_epoch{epoch}_{datetime.now().strftime("%Y%m%d-%H%M%S")}.pt",
             )
 
-    plot_loss_curve(losses, val_losses, save_path=f"./loss_curve_{datetime.now().strftime("%Y%m%d-%H%M%S")}.png")
+    plot_loss_curve(
+        losses, val_losses,
+        save_path=OUT_DIR / f"loss_curve_{datetime.now().strftime('%Y%m%d-%H%M%S')}.png"
+    )
