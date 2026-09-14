@@ -16,7 +16,6 @@ class ImageFolderDataset(Dataset):
         self.transform = transforms.Compose([
             transforms.Resize((image_size, image_size)),
             transforms.ToTensor(),  # scales to [0, 1]
-            # transforms.Normalize([0.5]*3, [0.5]*3),  # uncomment for [-1, 1] + tanh decoder
         ])
 
     def __len__(self):
@@ -27,7 +26,7 @@ class ImageFolderDataset(Dataset):
         return self.transform(img)
 
 
-def get_dataloader(root_dir, image_size=64, batch_size=64, num_workers=4, shuffle=True):
+def get_dataloader(root_dir, image_size=64, batch_size=64, num_workers=0, shuffle=True):
     dataset = ImageFolderDataset(root_dir, image_size=image_size)
     return DataLoader(
         dataset,

@@ -101,14 +101,18 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    checkpoint_dir = args.output_dir / "checkpoints"
+    OUT_DIR = args.output_dir
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    checkpoint_dir = OUT_DIR / "checkpoints"
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     loss_curve_path = args.output_dir / "loss_curve.png"
 
     dataloader = get_dataloader(
-        str(args.data_dir / "keras_png_slices_seg_train"),
+        str(args.data_dir / "keras_png_slices_train"),
         image_size=args.image_size,
         batch_size=args.batch_size,
+        num_workers=0
     )
 
     model = VAE(
