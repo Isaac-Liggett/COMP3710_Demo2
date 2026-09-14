@@ -43,6 +43,7 @@ class OasisSegmentationDataset(Dataset):
         label = self.label_transform(label)
 
         label = np.array(label)
+        #print(f"label: {np.unique(label)}")
 
         class_mask = np.zeros_like(label, dtype=np.int64)
         for class_idx, colour_val in enumerate(self.unique_colours):
