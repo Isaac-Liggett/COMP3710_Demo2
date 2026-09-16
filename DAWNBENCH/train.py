@@ -63,6 +63,7 @@ torch.backends.cudnn.benchmark = True  # autotune conv algorithms for fixed inpu
 
 def main():
     model = ResNet18().to(device, memory_format=torch.channels_last)
+    model = torch.compile(model) # backend="aot_eager" (for Windows)
 
     # Data Augmentation Pipeline
     transform_train = transforms.Compose([

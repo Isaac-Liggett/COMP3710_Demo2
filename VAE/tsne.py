@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     with torch.no_grad():
-        model_path = "./checkpoints/vae_epoch15.pt"
-        model = VAE(64*64, 256, 128)
+        model_path = "C:/Users/isaac/OneDrive/Documents/University/Y3S2/COMP3710/demo_data/vae_data/checkpoints/vae_epoch50.pt"
+        model = VAE(64*64, 256)
         state_dict = torch.load(model_path)["model_state_dict"]
         model.load_state_dict(state_dict)
 
