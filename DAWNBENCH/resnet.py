@@ -1,3 +1,8 @@
+"""
+Code Adapted from 
+https://www.geeksforgeeks.org/deep-learning/resnet18-from-scratch-using-pytorch/
+"""
+
 import torch.nn as nn
 
 class BasicBlock(nn.Module):
