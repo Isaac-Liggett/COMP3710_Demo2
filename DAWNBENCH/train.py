@@ -5,6 +5,8 @@ https://www.geeksforgeeks.org/deep-learning/resnet18-from-scratch-using-pytorch/
 
 from resnet import ResNet18
 
+
+from datetime import datetime
 import time
 import torch
 import torch.nn as nn
@@ -13,9 +15,10 @@ import torchvision
 import torchvision.transforms as transforms
 import argparse
 from pathlib import Path
+import random
 
 # Hyperparameters
-NUM_EPOCHS = 10
+NUM_EPOCHS = 30
 BATCH_SIZE = 512
 LR = 0.1 
 
@@ -32,6 +35,27 @@ def parse_args():
     )
     return parser.parse_args()
 
+def save_checkpoint(model, optimizer, epoch, loss, path):
+    torch.save({
+        "epoch": epoch,
+        "model_state_dict": model.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+        "loss": loss,
+    }, path)
+
+class Cutout:
+    def __init__(self, size=8):
+        self.size = size
+
+    def __call__(self, img):
+        h, w = img.shape[1], img.shape[2]
+        y = random.randint(0, h - 1)
+        x = random.randint(0, w - 1)
+        y1, y2 = max(0, y - self.size // 2), min(h, y + self.size // 2)
+        x1, x2 = max(0, x - self.size // 2), min(w, x + self.size // 2)
+        img[:, y1:y2, x1:x2] = 0.0
+        return img
+
 args = parse_args()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -46,7 +70,8 @@ def main():
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465),
-                            (0.2023, 0.1994, 0.2010))
+                            (0.2023, 0.1994, 0.2010)),
+        Cutout(size=16),
     ])
     transform_test = transforms.Compose([
         transforms.ToTensor(),
@@ -108,7 +133,7 @@ def main():
             total += labels.size(0)
 
         print(f'Epoch {epoch+1}/{args.epochs} | Loss: {running_loss/total:.4f} | '
-            f'Train Acc: {100.*correct/total:.2f}%')
+            f'Train Acc: {100.*correct/total:.2f}% | LR: {optimizer.param_groups[0]['lr']}')
 
     torch.cuda.synchronize()
     train_time = time.time() - start
@@ -127,6 +152,12 @@ def main():
     test_acc = 100. * correct / total
 
     print(f'Training time: {train_time:.1f}s | Test Acc: {test_acc:.2f}%')
+
+    save_checkpoint(
+        model, optimizer, epoch+1, running_loss/total,
+        args.data_dir / f"resnet_epoch{epoch+1}_{datetime.now().strftime('%Y%m%d-%H%M%S')}.pt",
+    )
+
 
 if __name__ == "__main__":
     main()
