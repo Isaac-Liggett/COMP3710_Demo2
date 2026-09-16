@@ -21,5 +21,4 @@ def parse_args():
 
 args = parse_args()
 
-trainset = torchvision.datasets.CIFAR10(root=args.data_dir/"train", train=True, download=True)
-testset = torchvision.datasets.CIFAR10(root=args.data_dir/"test", train=False, download=True)
+trainset = torchvision.datasets.CIFAR10(root=args.data_dir, train=True, download=True)
