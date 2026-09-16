@@ -26,7 +26,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     parser.add_argument("--epochs", type=int, default=NUM_EPOCHS)
-    parser.add_argument("--lr", type=int, default=LR)
+    parser.add_argument("--lr", type=float, default=LR)
     parser.add_argument(
         "--data-dir",
         type=Path,
@@ -82,13 +82,13 @@ def main():
 
     trainset = torchvision.datasets.CIFAR10(root=args.data_dir, train=True, download=True, transform=transform_train)
     trainloader = torch.utils.data.DataLoader(
-        trainset, batch_size=args.batch_size, shuffle=True, num_workers=4,
+        trainset, batch_size=args.batch_size, shuffle=True, num_workers=1,
         pin_memory=True, persistent_workers=True, drop_last=True
     )
 
     testset = torchvision.datasets.CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_test)
     testloader = torch.utils.data.DataLoader(
-        testset, batch_size=512, shuffle=False, num_workers=4, pin_memory=True
+        testset, batch_size=512, shuffle=False, num_workers=1, pin_memory=True
     )
 
     # Split params: no weight decay on BN params or biases
@@ -107,7 +107,7 @@ def main():
     criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
 
     scheduler = optim.lr_scheduler.OneCycleLR(
-        optimizer, max_lr=0.4, epochs=args.epochs,
+        optimizer, max_lr=args.lr, epochs=args.epochs,
         steps_per_epoch=len(trainloader), pct_start=0.3
     )
 
