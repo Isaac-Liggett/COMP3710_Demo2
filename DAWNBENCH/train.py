@@ -82,13 +82,13 @@ def main():
 
     trainset = torchvision.datasets.CIFAR10(root=args.data_dir, train=True, download=True, transform=transform_train)
     trainloader = torch.utils.data.DataLoader(
-        trainset, batch_size=args.batch_size, shuffle=True, num_workers=1,
+        trainset, batch_size=args.batch_size, shuffle=True, num_workers=4,
         pin_memory=True, persistent_workers=True, drop_last=True
     )
 
     testset = torchvision.datasets.CIFAR10(root=args.data_dir, train=False, download=True, transform=transform_test)
     testloader = torch.utils.data.DataLoader(
-        testset, batch_size=512, shuffle=False, num_workers=1, pin_memory=True
+        testset, batch_size=512, shuffle=False, num_workers=4, pin_memory=True
     )
 
     # Split params: no weight decay on BN params or biases

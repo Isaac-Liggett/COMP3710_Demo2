@@ -1,0 +1,6 @@
+The files in this repo run using python 3.14.6
+For each task ie. VAE, UNET & DAWNBENCH, cd into the directories and then run the scripts from there.
+
+Each task has its own train.py script which should work semi-independently assuming the data is downloaded and directory specified.
+
+There is a requirements.txt document listing the installable dependencies for pip
