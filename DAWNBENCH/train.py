@@ -53,13 +53,13 @@ transform_test = transforms.Compose([
                          (0.2023, 0.1994, 0.2010))
 ])
 
-trainset = torchvision.datasets.CIFAR10(root=args.data_dir/"dataset", train=True, download=True, transform=transform_train)
+trainset = torchvision.datasets.CIFAR10(root=args.data_dir/"train", train=True, download=True, transform=transform_train)
 trainloader = torch.utils.data.DataLoader(
     trainset, batch_size=args.batch_size, shuffle=True, num_workers=4,
     pin_memory=True, persistent_workers=True, drop_last=True
 )
 
-testset = torchvision.datasets.CIFAR10(root=args.data_dir/"dataset", train=False, download=True, transform=transform_test)
+testset = torchvision.datasets.CIFAR10(root=args.data_dir/"test", train=False, download=True, transform=transform_test)
 testloader = torch.utils.data.DataLoader(
     testset, batch_size=512, shuffle=False, num_workers=4, pin_memory=True
 )
